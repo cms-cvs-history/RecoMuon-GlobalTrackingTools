@@ -1,0 +1,12 @@
+#produce the mag field
+include "MagneticField/Engine/data/volumeBasedMagneticField.cfi"
+
+#produce the associator
+include "SimTracker/TrackAssociation/data/TrackAssociatorByChi2.cfi"
+include "SimTracker/TrackAssociation/data/TrackAssociatorByHits.cfi"
+include "SimTracker/TrackAssociation/data/TrackAssociatorByPosition.cff"
+
+include "RecoMuon/GlobalTrackingTools/data/ErrorMatrix.cff"
+
+#produce the module
+include "RecoMuon/GlobalTrackingTools/data/MuonErrorMatrixAnalyzer.cfi"

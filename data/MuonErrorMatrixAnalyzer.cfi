@@ -1,0 +1,19 @@
+module muonErrorMatrixAnalyzer = MuonErrorMatrixAnalyzer{
+	InputTag trackLabel = standAloneMuons:UpdatedAtVtx
+	InputTag trackingParticleLabel = trackingParticles
+	string associatorName = "TrackAssociatorByPosition"
+
+	PSet errorMatrix_Error_pset = {
+		string action = "constructor"
+		string rootFileName = "errorMatrix_Reported.root"
+		using errorMatrix_default
+	}
+
+	PSet errorMatrix_Spread_pset ={
+		string action = "constructor"
+		string rootFileName = "errorMatrix_Empirical.root"
+		using errorMatrix_default	
+	}
+
+	string plotFileName = "controlErrorMatrixAnalyzer.root" #empty string. no root file
+}
