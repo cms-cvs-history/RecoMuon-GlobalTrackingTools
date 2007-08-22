@@ -1,5 +1,4 @@
 block GlobalTrajectoryBuilderCommon = {	
-        bool TkTrajectoryAvailable = true
 	string TrackRecHitBuilder = "WithTrackAngle"
 	int32 MuonHitsOption = 1
 	int32 Direction = 0 
@@ -10,7 +9,7 @@ block GlobalTrajectoryBuilderCommon = {
 	double Chi2CutCSC = 150. 
 	double Chi2CutRPC = 1.
 	string StateOnTrackerBoundOutPropagator = "SmartPropagator"
-	string KFFitter = "GlbMuKFFitter"
+	string TrackerPropagator = "SteppingHelixPropagatorAny"
 
 	PSet GlobalMuonTrackMatcher = {
 	    untracked bool performMuonIntegrityMonitor = false
