@@ -13,11 +13,11 @@ block GlobalTrajectoryBuilderCommon = {
 
 	PSet GlobalMuonTrackMatcher = {
 	    untracked bool performMuonIntegrityMonitor = false
-	    double Chi2Cut = 300.0
+	    double Chi2Cut = 50.0
 	    double MinP = 2.5
 	    double MinPt = 1.0
-            double DeltaEtaCut = 0.2
-            double DeltaPhiCut = 0.2
+            double DeltaRCut = 0.2
+            double DeltaDCut = 10.0
 	}
 
 	PSet TrackTransformer = {
