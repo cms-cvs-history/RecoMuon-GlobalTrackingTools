@@ -10,11 +10,9 @@ block GlobalTrajectoryBuilderCommon = {
 	double Chi2CutDT = 10.
 	double Chi2CutCSC = 150. 
 	double Chi2CutRPC = 1.
-	string StateOnTrackerBoundOutPropagator = "SmartPropagatorAny"
 	string TrackerPropagator = "SteppingHelixPropagatorAny"
 
-	PSet GlobalMuonTrackMatcher = {
-	    untracked bool performMuonIntegrityMonitor = false
+        PSet GlobalMuonTrackMatcher = {
 	    double Chi2Cut = 50.0
 	    double MinP = 2.5
 	    double MinPt = 1.0
@@ -25,16 +23,10 @@ block GlobalTrajectoryBuilderCommon = {
 	PSet TrackTransformer = {
 	    string Fitter = "KFFitterForRefitInsideOut"
 	    string Smoother = "KFSmootherForRefitInsideOut"
-	    string Propagator = "SmartPropagatorAny"
 	    string TrackerRecHitBuilder = "WithTrackAngle"
 	    string MuonRecHitBuilder = "MuonRecHitBuilder"
 	    string RefitDirection = "insideOut"
 	    bool RefitRPCHits = true
-	}
-
-	PSet RefitterParameters = {
-	    string AlongMomentumPropagator = "SmartPropagatorAny"
-	    string OppositeToMomentumPropagator = "SmartPropagatorAnyOpposite"
 	}
 
     using MuonTrackingRegionCommon
