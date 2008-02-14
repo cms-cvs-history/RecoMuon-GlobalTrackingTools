@@ -1,3 +1,5 @@
+include "RecoMuon/GlobalTrackingTools/data/MuonTrackingRegionCommon.cff"
+
 block GlobalTrajectoryBuilderCommon = {	
 	string TrackRecHitBuilder = "WithTrackAngle"
 	int32 MuonHitsOption = 1
@@ -35,30 +37,6 @@ block GlobalTrajectoryBuilderCommon = {
 	    string OppositeToMomentumPropagator = "SmartPropagatorAnyOpposite"
 	}
 
-    PSet MuonTrackingRegionBuilder ={
-	
-        // card to configure the Region Of Interest. The default parameters are
-        // mainly based on MC Study. 
-	
-	double Rescale = 3           // Rescale Error in Eta and Phi
-	double DeltaZ_Region = 15.9  // half interaction region 
-	double DeltaR = 0.2          // geometrical constraint
-	double EscapePt = 1.5        // Min pt to escape traker
-	double Phi_min = .06         // Lower limit to the region phi
-	double Eta_min = .05         // Lower limit to the region eta
+    using MuonTrackingRegionCommon
 
-	bool UseFixedRegion = false  //Used a fixed region size
-	double Phi_fixed = 0.2
-	double Eta_fixed = 0.2 
-	
-        // Upper limits on regions eta and phi size. Be careful changing these 
-        // you are changing the parametrization 
-	
-	double EtaR_UpperLimit_Par1 = .25 
-	double EtaR_UpperLimit_Par2 = .15
-	double PhiR_UpperLimit_Par1 = .6
-	double PhiR_UpperLimit_Par2 = .2
-	
-    }
-    
 }

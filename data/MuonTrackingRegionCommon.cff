@@ -1,0 +1,28 @@
+block MuonTrackingRegionCommon = {
+
+    PSet MuonTrackingRegionBuilder = {	
+    // card to configure the Region Of Interest. The default parameters are
+    // mainly based on MC Study.
+	
+	double Rescale_eta = 3           // Rescale Error in Eta
+	double Rescale_phi = 3           // Rescale Error in Phi
+	double DeltaZ_Region = 15.9      // half interaction region
+	double DeltaR = 0.2              // geometrical constraint
+	double EscapePt = 1.5            // Min pt to escape traker
+	double Phi_min = .02             // Lower limit to the region phi
+	double Eta_min = .013            // Lower limit to the region eta
+	
+	bool UseFixedRegion = false      //Used a fixed region size
+	double Phi_fixed = 0.2
+	double Eta_fixed = 0.2
+	
+        // Upper limits on regions eta and phi size. Be careful changing these
+        // you are changing the parametrization
+	
+	double EtaR_UpperLimit_Par1 = .25
+	double EtaR_UpperLimit_Par2 = .15
+	double PhiR_UpperLimit_Par1 = .6
+	double PhiR_UpperLimit_Par2 = .2
+	
+    }   
+}
