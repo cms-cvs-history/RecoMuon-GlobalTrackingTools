@@ -1,34 +1,39 @@
 include "RecoMuon/GlobalTrackingTools/data/MuonTrackingRegionCommon.cff"
 
 block GlobalTrajectoryBuilderCommon = {	
-	string TrackRecHitBuilder = "WithTrackAngle"
-	int32 MuonHitsOption = 1
-	int32 Direction = 0 
-	double PtCut = 1.0 
-	double Chi2ProbabilityCut = 30.0
-	int32 HitThreshold = 1 
-	double Chi2CutDT = 10.
-	double Chi2CutCSC = 150. 
-	double Chi2CutRPC = 1.
-	string TrackerPropagator = "SteppingHelixPropagatorAny"
-
-        PSet GlobalMuonTrackMatcher = {
-	    double Chi2Cut = 50.0
-	    double MinP = 2.5
-	    double MinPt = 1.0
-            double DeltaRCut = 0.2
-            double DeltaDCut = 10.0
-	}
-
-	PSet TrackTransformer = {
-	    string Fitter = "KFFitterForRefitInsideOut"
-	    string Smoother = "KFSmootherForRefitInsideOut"
-	    string TrackerRecHitBuilder = "WithTrackAngle"
-	    string MuonRecHitBuilder = "MuonRecHitBuilder"
-	    string RefitDirection = "insideOut"
-	    bool RefitRPCHits = true
-	}
-
+    
+    InputTag DTRecSegmentLabel = dt4DSegments
+    InputTag CSCRecSegmentLabel = cscSegments
+    InputTag RPCRecSegmentLabel = rpcRecHits
+    
+    string TrackRecHitBuilder = "WithTrackAngle"
+    int32 MuonHitsOption = 1
+    int32 Direction = 0 
+    double PtCut = 1.0 
+    double Chi2ProbabilityCut = 30.0
+    int32 HitThreshold = 1 
+    double Chi2CutDT = 10.
+    double Chi2CutCSC = 150. 
+    double Chi2CutRPC = 1.
+    string TrackerPropagator = "SteppingHelixPropagatorAny"
+    
+    PSet GlobalMuonTrackMatcher = {
+	double Chi2Cut = 50.0
+	double MinP = 2.5
+	double MinPt = 1.0
+	double DeltaRCut = 0.2
+	double DeltaDCut = 10.0
+    }
+    
+    PSet TrackTransformer = {
+	string Fitter = "KFFitterForRefitInsideOut"
+	string Smoother = "KFSmootherForRefitInsideOut"
+	string TrackerRecHitBuilder = "WithTrackAngle"
+	string MuonRecHitBuilder = "MuonRecHitBuilder"
+	string RefitDirection = "insideOut"
+	bool RefitRPCHits = true
+    }
+    
     using MuonTrackingRegionCommon
 
 }
