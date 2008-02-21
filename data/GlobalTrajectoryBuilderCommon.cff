@@ -1,5 +1,9 @@
 block GlobalTrajectoryBuilderCommon = {	
-	string TrackRecHitBuilder = "WithTrackAngle"
+    InputTag DTRecSegmentLabel = dt4DSegments
+    InputTag CSCRecSegmentLabel = cscSegments
+    InputTag RPCRecSegmentLabel = rpcRecHits
+    
+        string TrackRecHitBuilder = "WithTrackAngle"
 	int32 MuonHitsOption = 1
 	int32 Direction = 0 
 	double PtCut = 1.0 
