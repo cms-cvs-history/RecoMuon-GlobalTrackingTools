@@ -17,7 +17,7 @@ block GlobalTrajectoryBuilderCommon = {
 
 	PSet GlobalMuonTrackMatcher = {
 	    untracked bool performMuonIntegrityMonitor = false
-	    double Chi2Cut = 300.0
+	    double Chi2Cut = 50.0
 	    double MinP = 2.5
 	    double MinPt = 1.0
             double DeltaRCut = 0.2
