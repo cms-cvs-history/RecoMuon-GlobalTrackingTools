@@ -4,7 +4,7 @@ block MuonTrackingRegionCommon = {
 
         InputTag beamSpot = "offlineBeamSpot"	
         string VertexCollection = "pixelVertices"
-
+	bool UseVertex = false
 
 	double Rescale_eta = 3              // Rescale Error in Eta
 	double Rescale_phi = 3              // Rescale Error in Phi
