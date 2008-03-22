@@ -13,8 +13,8 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date$
- *  $Revision$
+ *  $Date: 2008/02/21 19:01:24 $
+ *  $Revision: 1.6.2.1 $
  *
  *  Authors :
  *  N. Neumeister            Purdue University
@@ -842,10 +842,12 @@ vector<Trajectory> GlobalTrajectoryBuilderBase::refitTrajectory(const Trajectory
   ConstRecHitContainer trackerRecHits = tkTraj.recHits();
   
   RefitDirection recHitDir = checkRecHitsOrdering(trackerRecHits);
+  //force the rechits to be ordered from outside-in
   if( recHitDir == inToOut ) reverse(trackerRecHits.begin(),trackerRecHits.end());
-  
-  PropagationDirection refitDir = (recHitDir == inToOut) ? oppositeToMomentum : alongMomentum ;
-  
+
+  //force the refit direction to be opposite to momentum due to the rechit ordering  
+  PropagationDirection refitDir =  oppositeToMomentum;
+    
   TrajectorySeed seed(garbage1,garbage2,refitDir);
   
   TrajectoryMeasurement outerTM = (tkTraj.direction() == alongMomentum) ? tkTraj.lastMeasurement() : tkTraj.firstMeasurement();
