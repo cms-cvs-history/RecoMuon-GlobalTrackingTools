@@ -12,7 +12,7 @@ block GlobalTrajectoryBuilderCommon = {
 	double Chi2CutDT = 10.
 	double Chi2CutCSC = 150. 
 	double Chi2CutRPC = 1.
-	string StateOnTrackerBoundOutPropagator = "SmartPropagatorAny"
+	string StateOnTrackerBoundOutPropagator = "SmartPropagator"
 	string TrackerPropagator = "SteppingHelixPropagatorAny"
 
 	PSet GlobalMuonTrackMatcher = {
