@@ -1,8 +1,8 @@
 /** \class MuonTrackingRegionBuilder
  *  Base class for the Muon reco TrackingRegion Builder
  *
- *  $Date: 2008/02/29 22:09:30 $
- *  $Revision: 1.6 $
+ *  $Date: 2008/03/05 21:12:55 $
+ *  $Revision: 1.7 $
  *  \author A. Everett - Purdue University
     \author A. Grelli -  Purdue University, Pavia University
  */
@@ -33,6 +33,8 @@ MuonTrackingRegionBuilder::MuonTrackingRegionBuilder(const edm::ParameterSet& pa
 
   // Vertex Collection and Beam Spot
   theBeamSpotTag = par.getParameter<edm::InputTag>("beamSpot");
+  theVertexCollTag = par.getParameter<edm::InputTag>("vertexCollection");
+  usePixelVertex = par.getParameter<bool>("UseVertex");
 
   // Parmeters
   Nsigma_eta     = par.getParameter<double>("Rescale_eta");
@@ -47,9 +49,11 @@ MuonTrackingRegionBuilder::MuonTrackingRegionBuilder(const edm::ParameterSet& pa
   Phi_Region_parameter1 = par.getParameter<double>("PhiR_UpperLimit_Par1");
   Phi_Region_parameter2 = par.getParameter<double>("PhiR_UpperLimit_Par2");
 
-  usePixelVertex = par.getParameter<bool>("UseVertex");
   //Fixed limits
   theFixedFlag     = par.getParameter<bool>("UseFixedRegion");
+  Eta_fixed        = par.getParameter<double>("Etafixed");
+  Phi_fixed        = par.getParameter<double>("Phifixed");
+ 
   Phi_minimum      = par.getParameter<double>("Phi_min");
   Eta_minimum      = par.getParameter<double>("Eta_min");
   HalfZRegion_size = par.getParameter<double>("DeltaZ_Region");
@@ -59,7 +63,7 @@ MuonTrackingRegionBuilder::MuonTrackingRegionBuilder(const edm::ParameterSet& pa
   theVertexPos = GlobalPoint(0.0,0.0,0.0);
 }
 
-RectangularEtaPhiTrackingRegion* MuonTrackingRegionBuilder::region(const reco::TrackRef& track) const//, const reco::BeamSpot& beamSpot) const
+RectangularEtaPhiTrackingRegion* MuonTrackingRegionBuilder::region(const reco::TrackRef& track) const
 {
   return region(*track);
 }
@@ -70,7 +74,7 @@ void MuonTrackingRegionBuilder::setEvent(const edm::Event& event) {
 }
 
 
-RectangularEtaPhiTrackingRegion* MuonTrackingRegionBuilder::region(const reco::Track& staTrack) const//, const reco::BeamSpot& beamSpot) const
+RectangularEtaPhiTrackingRegion* MuonTrackingRegionBuilder::region(const reco::Track& staTrack) const
 {
   TSCPBuilderNoMaterial tscpBuilder; 
   //Get muon free state updated at vertex
@@ -103,7 +107,7 @@ RectangularEtaPhiTrackingRegion* MuonTrackingRegionBuilder::region(const reco::T
   }else{
   // Get originZPos from list of vertices (first or all)
     edm::Handle<reco::VertexCollection> vertexCollection;
-    bool vtxHandleFlag = theEvent->getByLabel(vertexCollName,vertexCollection);
+    bool vtxHandleFlag = theEvent->getByLabel(theVertexCollTag,vertexCollection);
   // ceck if exsist a non empty vertex collection
     if(vtxHandleFlag && vertexCollection->size() > 0) {
      reco::VertexCollection::const_iterator Vtx=vertexCollection->begin();// ! only the first low lomi option
@@ -187,7 +191,7 @@ RectangularEtaPhiTrackingRegion* MuonTrackingRegionBuilder::region(const reco::T
 
   float deltaR  = Delta_R_Region;
   double minPt   = max(TkEscapePt,mom.perp()*0.6);
-
+  
   RectangularEtaPhiTrackingRegion * region = 0;  
 
 
