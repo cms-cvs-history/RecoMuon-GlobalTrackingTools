@@ -12,8 +12,8 @@ block MuonTrackingRegionCommon = {
 	double DeltaZ_Region = 15.9      // half interaction region
 	double DeltaR = 0.2              // geometrical constraint
 	double EscapePt = 1.5            // Min pt to escape traker
-	double Phi_min = .02             // Lower limit to the region phi
-	double Eta_min = .013            // Lower limit to the region eta
+	double Phi_min = .05             // Lower limit to the region phi
+	double Eta_min = .05             // Lower limit to the region eta
 	
 	bool UseFixedRegion = false      // Use a fixed region size
 	double Phi_fixed = 0.2
