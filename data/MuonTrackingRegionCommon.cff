@@ -6,27 +6,14 @@ block MuonTrackingRegionCommon = {
         InputTag vertexCollection = "pixelVertices"
 	bool UseVertex = false           // use reconstructed vertex instead of beamspot
 
-<<<<<<< MuonTrackingRegionCommon.cff
-	bool UseVertex = false 
-
-	double Rescale_eta = 3              // Rescale Error in Eta
-	double Rescale_phi = 3              // Rescale Error in Phi
-        double Rescale_Dz  = 3              // Delta Z from tracker
-	double DeltaZ_Region = 15.9         // half interaction region
-	double DeltaR = 0.2                 // geometrical constraint
-	double EscapePt = 1.5               // Min pt to escape traker
-	double Phi_min = .1                // Lower limit to the region phi
-	double Eta_min = .1                // Lower limit to the region eta
-=======
 	double Rescale_eta = 3           // Rescale Error in Eta
 	double Rescale_phi = 3           // Rescale Error in Phi
         double Rescale_Dz  = 3           // Delta Z from tracker
 	double DeltaZ_Region = 15.9      // half interaction region
 	double DeltaR = 0.2              // geometrical constraint
 	double EscapePt = 1.5            // Min pt to escape traker
-	double Phi_min = .05             // Lower limit to the region phi
-	double Eta_min = .05             // Lower limit to the region eta
->>>>>>> 1.5
+	double Phi_min = .1             // Lower limit to the region phi
+	double Eta_min = .1             // Lower limit to the region eta
 	
 	bool UseFixedRegion = false      // Use a fixed region size
 	double Phi_fixed = 0.2
@@ -42,3 +29,6 @@ block MuonTrackingRegionCommon = {
 	
     }   
 }
+
+
+
