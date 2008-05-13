@@ -13,15 +13,13 @@ block GlobalMuonRefitter = {
     double Chi2CutCSC = 150. 
     double Chi2CutRPC = 1.
     
-#    PSet TrackTransformer = {
-    	string Fitter = "KFFitterForRefitInsideOut"
-        string Smoother = "KFSmootherForRefitInsideOut"
-    	string Propagator = "SmartPropagatorAny"
-        string TrackerRecHitBuilder = "WithTrackAngle"
-    	string MuonRecHitBuilder = "MuonRecHitBuilder"
+    string Fitter = "KFFitterForRefitInsideOut"
+    string Smoother = "KFSmootherForRefitInsideOut"
+    string Propagator = "SmartPropagatorAnyRK"
+    string TrackerRecHitBuilder = "WithTrackAngle"
+    string MuonRecHitBuilder = "MuonRecHitBuilder"
     			    
-    	string RefitDirection = "insideOut"
-        bool RefitRPCHits = true
-#    }
+    string RefitDirection = "insideOut"
+    bool RefitRPCHits = true
 
 }
