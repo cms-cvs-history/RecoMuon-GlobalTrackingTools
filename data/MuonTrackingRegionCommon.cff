@@ -26,7 +26,11 @@ block MuonTrackingRegionCommon = {
 	double EtaR_UpperLimit_Par2 = .15
 	double PhiR_UpperLimit_Par1 = .6
 	double PhiR_UpperLimit_Par2 = .2
-	
+
+	// -1. : nothing is made on demand
+	// 0.0 : strip only are made on demand
+	// 1.0 : strip and pixel are made on demand
+	double OnDemand = -1.0
     }   
 }
 
