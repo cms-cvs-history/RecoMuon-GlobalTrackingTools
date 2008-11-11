@@ -12,8 +12,8 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2008/10/02 20:26:04 $
- *  $Revision: 1.23 $
+ *  $Date: 2008/10/07 17:22:28 $
+ *  $Revision: 1.24 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -207,8 +207,7 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
 
       TransientTrackingRecHit::ConstRecHitContainer trackerRecHits;
       if((*it)->trackerTrack().isNonnull()){
-	reco::TransientTrack track(*(*it)->trackerTrack(),&*(theService->magneticField()),theService->trackingGeometry());    LogDebug(theCategory);  
-	trackerRecHits = getTransientRecHits(track);      LogDebug(theCategory);  
+	trackerRecHits = getTransientRecHits(*(*it)->trackerTrack());
       } else {
 	trackerRecHits = (*it)->trackerTrajectory()->recHits();
       }
@@ -408,8 +407,7 @@ void GlobalTrajectoryBuilderBase::checkMuonHits(const reco::Track& muon,
   int dethits[4];
   for ( int i=0; i<4; i++ ) hits[i]=dethits[i]=0;
   
-  reco::TransientTrack track(muon,&*(theService->magneticField()),theService->trackingGeometry());
-  TransientTrackingRecHit::ConstRecHitContainer muonRecHits = getTransientRecHits(track);
+  TransientTrackingRecHit::ConstRecHitContainer muonRecHits = getTransientRecHits(muon);
 
 //  all.assign(muonRecHits.begin(),muonRecHits.end()); //FIXME: should use this
 
@@ -954,20 +952,31 @@ GlobalTrajectoryBuilderBase::selectTrackerHits(const ConstRecHitContainer& all) 
 }
 
 TransientTrackingRecHit::ConstRecHitContainer
-GlobalTrajectoryBuilderBase::getTransientRecHits(const reco::TransientTrack& track) const {
+GlobalTrajectoryBuilderBase::getTransientRecHits(const reco::Track& track) const {
   TransientTrackingRecHit::ConstRecHitContainer result;
   
-  for (trackingRecHit_iterator hit = track.recHitsBegin(); hit != track.recHitsEnd(); ++hit)
-    if((*hit)->isValid())
-      if ( (*hit)->geographicalId().det() == DetId::Tracker )
-	result.push_back(theTrackerRecHitBuilder->build(&**hit));
-      else if ( (*hit)->geographicalId().det() == DetId::Muon ){
+  TrajectoryStateTransform tsTrans;
+  
+  TrajectoryStateOnSurface currTsos = tsTrans.innerStateOnSurface(track, *theService->trackingGeometry(), &*theService->magneticField());
+  
+  for (trackingRecHit_iterator hit = track.recHitsBegin(); hit != track.recHitsEnd(); ++hit) {
+    if((*hit)->isValid()){
+      DetId recoid = (*hit)->geographicalId();
+      if ( recoid.det() == DetId::Tracker ) {
+	TransientTrackingRecHit::RecHitPointer ttrhit = theTrackerRecHitBuilder->build(&**hit);
+	TrajectoryStateOnSurface predTsos =  theService->propagator(theTrackerPropagatorName)->propagate(currTsos, theService->trackingGeometry()->idToDet(recoid)->surface());
+	LogTrace(theCategory)<<"predtsos "<<predTsos.isValid();
+	if ( predTsos.isValid() ) currTsos = predTsos;
+	TransientTrackingRecHit::RecHitPointer preciseHit = ttrhit->clone(predTsos);
+	result.push_back(preciseHit);
+      } else if ( recoid.det() == DetId::Muon ) {
 	if( (*hit)->geographicalId().subdetId() == 3 && !theRPCInTheFit){
 	  LogDebug(theCategory) << "RPC Rec Hit discarged"; 
 	  continue;
 	}
 	result.push_back(theMuonRecHitBuilder->build(&**hit));
       }
-
+    }
+  }
   return result;
 }

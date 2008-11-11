@@ -14,8 +14,8 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2008/09/30 03:30:19 $
- *  $Revision: 1.7 $
+ *  $Date: 2008/10/02 20:26:03 $
+ *  $Revision: 1.8 $
  *
  *  \author N. Neumeister 	 Purdue University
  *  \author C. Liu 		 Purdue University
@@ -138,7 +138,7 @@ class GlobalTrajectoryBuilderBase : public MuonTrajectoryBuilder {
     const MuonServiceProxy* service() const { return theService; }
 
   TransientTrackingRecHit::ConstRecHitContainer
-    getTransientRecHits(const reco::TransientTrack& track) const;
+    getTransientRecHits(const reco::Track& track) const;
 
     /// Ordering along increasing radius (for DT rechits)
     struct RadiusComparatorInOut{
