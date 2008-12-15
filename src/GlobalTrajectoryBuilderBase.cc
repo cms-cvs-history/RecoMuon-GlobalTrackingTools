@@ -12,8 +12,8 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2008/12/12 21:18:46 $
- *  $Revision: 1.29 $
+ *  $Date: 2008/12/15 19:20:31 $
+ *  $Revision: 1.29.2.1 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -193,6 +193,8 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
 
   // add muon hits and refit/smooth trajectories
   CandidateContainer refittedResult;
+
+  Trajectory * refitTkTraj;
   
   if ( theMuonHitsOption > 0 ) {
 
@@ -270,11 +272,13 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
       refit[2] = ( refitted2.empty() ) ? 0 : &(*refitted2.begin());
       refit[3] = ( refitted3.empty() ) ? 0 : &(*refitted3.begin());
 
+      refitTkTraj = refit[0];
+
       const Trajectory* chosenTrajectory = chooseTrajectory(refit, theMuonHitsOption);
       if (chosenTrajectory) {
 	    Trajectory *tmpTrajectory = new Trajectory(*chosenTrajectory);
 	    tmpTrajectory->setSeedRef((*it)->trackerTrack()->seedRef());
-	    finalTrajectory = new MuonCandidate(tmpTrajectory, (*it)->muonTrack(), (*it)->trackerTrack(), new Trajectory(*(*it)->trackerTrajectory()));
+	    finalTrajectory = new MuonCandidate(tmpTrajectory, (*it)->muonTrack(), (*it)->trackerTrack(), new Trajectory(*refitTkTraj));
       } else {
 	    LogError(theCategory)<<"could not choose a valid trajectory. skipping the muon. no final trajectory.";
       }
@@ -294,7 +298,19 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
 	  
     // loop over tracker trajectories and refit them
     for ( CandidateContainer::const_iterator it = tkTrajs.begin(); it != tkTrajs.end(); it++ ) {
-      refittedResult.push_back(new MuonCandidate(new Trajectory(*(*it)->trackerTrajectory()),(*it)->muonTrack(),(*it)->trackerTrack(), new Trajectory(*(*it)->trackerTrajectory())));
+
+      ConstRecHitContainer muonRecHits0; // no muon hits
+      ConstRecHitContainer trackerRecHits;
+      if ((*it)->trackerTrack().isNonnull()) {
+	LogDebug(theCategory);
+	trackerRecHits = getTransientRecHits(*(*it)->trackerTrack());
+      } 
+      reco::TransientTrack tTT((*it)->trackerTrack(),&*theService->magneticField(),theService->trackingGeometry());
+      TrajectoryStateOnSurface innerTsos = tTT.innermostMeasurementState();
+      TC refitted0 = glbTrajectory(*(*it)->trackerTrack()->seedRef(),trackerRecHits, muonRecHits0,innerTsos);
+      refitTkTraj = ( refitted0.empty() ) ? 0 : &(*refitted0.begin());
+      
+      refittedResult.push_back(new MuonCandidate(new Trajectory(*refitTkTraj),(*it)->muonTrack(),(*it)->trackerTrack(), new Trajectory(*refitTkTraj) ));
     }
   }
 
