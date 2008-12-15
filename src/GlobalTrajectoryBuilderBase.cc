@@ -12,8 +12,8 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2008/12/15 19:20:31 $
- *  $Revision: 1.29.2.1 $
+ *  $Date: 2008/12/15 19:38:41 $
+ *  $Revision: 1.29.2.2 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -128,7 +128,7 @@ GlobalTrajectoryBuilderBase::GlobalTrajectoryBuilderBase(const edm::ParameterSet
   theCSCChi2Cut = par.getParameter<double>("Chi2CutCSC");
   theRPCChi2Cut = par.getParameter<double>("Chi2CutRPC");
   theKFFitterName = par.getParameter<string>("KFFitter");
-  theTkTrajsAvailableFlag = true; 
+  theTkTrajsAvailableFlag = false; //aaa
 
   theCacheId_TRH = 0;
 
@@ -194,7 +194,7 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
   // add muon hits and refit/smooth trajectories
   CandidateContainer refittedResult;
 
-  Trajectory * refitTkTraj;
+
   
   if ( theMuonHitsOption > 0 ) {
 
@@ -248,7 +248,7 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
       MuonCandidate* finalTrajectory = 0;
       
       // tracker only track
-      refitted0 = glbTrajectory(*(*it)->trackerTrack()->seedRef(),trackerRecHits, muonRecHits0,innerTsos);
+      refitted0 = theTrackTransformer->transform((*it)->trackerTrack());
 
 
       // full track with all muon hits
@@ -272,7 +272,8 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
       refit[2] = ( refitted2.empty() ) ? 0 : &(*refitted2.begin());
       refit[3] = ( refitted3.empty() ) ? 0 : &(*refitted3.begin());
 
-      refitTkTraj = refit[0];
+      refit[0]->setSeedRef((*it)->trackerTrack()->seedRef());
+      Trajectory * refitTkTraj = refit[0];
 
       const Trajectory* chosenTrajectory = chooseTrajectory(refit, theMuonHitsOption);
       if (chosenTrajectory) {
@@ -298,17 +299,12 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
 	  
     // loop over tracker trajectories and refit them
     for ( CandidateContainer::const_iterator it = tkTrajs.begin(); it != tkTrajs.end(); it++ ) {
-
-      ConstRecHitContainer muonRecHits0; // no muon hits
-      ConstRecHitContainer trackerRecHits;
-      if ((*it)->trackerTrack().isNonnull()) {
-	LogDebug(theCategory);
-	trackerRecHits = getTransientRecHits(*(*it)->trackerTrack());
-      } 
-      reco::TransientTrack tTT((*it)->trackerTrack(),&*theService->magneticField(),theService->trackingGeometry());
-      TrajectoryStateOnSurface innerTsos = tTT.innermostMeasurementState();
-      TC refitted0 = glbTrajectory(*(*it)->trackerTrack()->seedRef(),trackerRecHits, muonRecHits0,innerTsos);
-      refitTkTraj = ( refitted0.empty() ) ? 0 : &(*refitted0.begin());
+      Trajectory * refitTkTraj = 0;
+      TC refitted0 = theTrackTransformer->transform((*it)->trackerTrack());
+      if( ! refitted0.empty() ) {
+	refitTkTraj = &(*refitted0.begin());
+	refitTkTraj->setSeedRef((*it)->trackerTrack()->seedRef());
+      }
       
       refittedResult.push_back(new MuonCandidate(new Trajectory(*refitTkTraj),(*it)->muonTrack(),(*it)->trackerTrack(), new Trajectory(*refitTkTraj) ));
     }
@@ -373,8 +369,8 @@ GlobalTrajectoryBuilderBase::chooseRegionalTrackerTracks(const TrackCand& staCan
     //if ( inEtaRange && inPhiRange ) {
     if (deltaR_tmp < deltaR_max) {
       TrackCand tmpCand = TrackCand(*is);
-      LogTrace(theCategory) << "Adding Traj to Tk";
-      addTraj(tmpCand);
+      //      LogTrace(theCategory) << "Adding Traj to Tk";
+      //      addTraj(tmpCand);
       result.push_back(tmpCand);
     }
   }
@@ -821,23 +817,23 @@ void GlobalTrajectoryBuilderBase::printHits(const ConstRecHitContainer& hits) co
 //
 // add Trajectory* to TrackCand if not already present
 //
-void GlobalTrajectoryBuilderBase::addTraj(TrackCand& candIn) {
-
-  if ( candIn.first == 0 ) {
-    theTkTrajsAvailableFlag = false;
-    LogTrace(theCategory) << "Making new trajectory from TrackRef " << (*candIn.second).pt();
-
-    TC staTrajs = theTrackTransformer->transform(*(candIn.second));
-    if (staTrajs.empty()) {
-        LogTrace(theCategory) << "Transformer: Add Traj failed!";
-        candIn = TrackCand(0,candIn.second); 
-    } else {
-        Trajectory * tmpTrajectory = new Trajectory(staTrajs.front());
-        tmpTrajectory->setSeedRef(candIn.second->seedRef());
-        candIn = TrackCand(tmpTrajectory,candIn.second);
-    }
-  }
-}
+//void GlobalTrajectoryBuilderBase::addTraj(TrackCand& candIn) {
+//
+//  if ( candIn.first == 0 ) {
+//    theTkTrajsAvailableFlag = false;
+//    LogTrace(theCategory) << "Making new trajectory from TrackRef " << (*candIn.second).pt();
+//
+//    TC staTrajs = theTrackTransformer->transform(*(candIn.second));
+//    if (staTrajs.empty()) {
+//        LogTrace(theCategory) << "Transformer: Add Traj failed!";
+//        candIn = TrackCand(0,candIn.second); 
+//    } else {
+//        Trajectory * tmpTrajectory = new Trajectory(staTrajs.front());
+//        tmpTrajectory->setSeedRef(candIn.second->seedRef());
+//        candIn = TrackCand(tmpTrajectory,candIn.second);
+//    }
+//  }
+//}
 
 
 //
