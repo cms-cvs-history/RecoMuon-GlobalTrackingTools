@@ -4,8 +4,8 @@
  *  Description:
  *
  *
- *  $Date: 2009/07/09 12:05:30 $
- *  $Revision: 1.8 $
+ *  $Date: 2009/07/10 12:59:37 $
+ *  $Revision: 1.6.2.1 $
  *
  *  Authors :
  *  P. Traczyk, SINS Warsaw
@@ -86,6 +86,7 @@ GlobalMuonRefitter::GlobalMuonRefitter(const edm::ParameterSet& par,
 
   // Refit direction
   string refitDirectionName = par.getParameter<string>("RefitDirection");
+  bool theCosmicFlag = par.getParameter<bool>("PropDirForCosmics");
   
   if (refitDirectionName == "insideOut" ) theRefitDirection = insideOut;
   else if (refitDirectionName == "outsideIn" ) theRefitDirection = outsideIn;
@@ -109,7 +110,7 @@ GlobalMuonRefitter::GlobalMuonRefitter(const edm::ParameterSet& par,
 
   theRPCInTheFit = par.getParameter<bool>("RefitRPCHits");
 
-  theCacheId_TC = theCacheId_GTG = theCacheId_MG = theCacheId_TRH = 0;
+  theCacheId_TRH = 0;
 
 }
 
@@ -537,8 +538,33 @@ vector<Trajectory> GlobalMuonRefitter::transform(const reco::Track& newTrack,
   const TrajectoryStateOnSurface& tsosForDir = inner_is_first ? lastTSOS : firstTSOS;
   propDir = (tsosForDir.globalPosition().basicVector().dot(tsosForDir.globalMomentum().basicVector())>0) ? alongMomentum : oppositeToMomentum;
 
-  PropagationDirection propDir_first = (firstTSOS.globalPosition().basicVector().dot(firstTSOS.globalMomentum().basicVector()) > 0) ? alongMomentum : oppositeToMomentum;
-  PropagationDirection propDir_last  = (lastTSOS .globalPosition().basicVector().dot(lastTSOS .globalMomentum().basicVector()) > 0) ? alongMomentum : oppositeToMomentum;
+  // Additional propagation diretcion determination logic for cosmic muons
+  if (theCosmicFlag) {
+    PropagationDirection propDir_first = (firstTSOS.globalPosition().basicVector().dot(firstTSOS.globalMomentum().basicVector()) > 0) ? alongMomentum : oppositeToMomentum;
+    PropagationDirection propDir_last  = (lastTSOS .globalPosition().basicVector().dot(lastTSOS .globalMomentum().basicVector()) > 0) ? alongMomentum : oppositeToMomentum;
+
+    int y_count = 0;
+    for (TransientTrackingRecHit::ConstRecHitContainer::const_iterator it = recHitsForReFit.begin(); it != recHitsForReFit.end(); ++it) {
+      if ((*it)->globalPosition().y() > 0) ++y_count;
+        else --y_count;
+    }
+    
+    PropagationDirection propDir_ycount = alongMomentum;
+    if (y_count > 0) {
+      if (theRefitDirection == insideOut) propDir_ycount = oppositeToMomentum;
+        else if (theRefitDirection == outsideIn) propDir_ycount = alongMomentum;
+    } else {
+      if (theRefitDirection == insideOut) propDir_ycount = alongMomentum;
+        else if (theRefitDirection == outsideIn) propDir_ycount = oppositeToMomentum;
+    }
+    
+    LogDebug(theCategory) << " y_count = " << y_count << "; based on geometrically-outermost TSOS, propDir is " << propDir << " " << (propDir == propDir_ycount ? "agrees" : "disagrees") << " with ycount determination";;
+
+    if (propDir_first != propDir_last) {
+      LogDebug(theCategory) << "since first/last disagreed, using y_count propDir";
+      propDir = propDir_ycount;
+    }
+  }
 
   TrajectorySeed seed(garbage1,garbage2,propDir);
 
