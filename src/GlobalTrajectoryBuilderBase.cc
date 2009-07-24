@@ -12,10 +12,10 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2009/07/15 23:30:26 $
- *  $Revision: 1.34.2.1 $
- *  $Date: 2009/07/15 23:30:26 $
- *  $Revision: 1.34.2.1 $
+ *  $Date: 2009/07/23 09:21:55 $
+ *  $Revision: 1.34.2.2 $
+ *  $Date: 2009/07/23 09:21:55 $
+ *  $Revision: 1.34.2.2 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -235,10 +235,13 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
                                     
     // full track with all muon hits
     refitted1 = glbTrajectory(tmpSeed, trackerRecHits, muonRecHits,innerTsos);
-    Trajectory *glbTrajectory = new Trajectory(*(refitted1.begin()));
+    Trajectory *glbTrajectory = 0;
+    if (!refitted1.empty()) glbTrajectory = new Trajectory(*(refitted1.begin()));
+    else LogWarning(theCategory)<< "Failed to load global track trajectory"; 
     if (glbTrajectory) glbTrajectory->setSeedRef(tmpSeed);
     
-    finalTrajectory = new MuonCandidate(glbTrajectory, (*it)->muonTrack(), (*it)->trackerTrack(), 
+    finalTrajectory = 0;
+    if(glbTrajectory && tkTrajectory) finalTrajectory = new MuonCandidate(glbTrajectory , (*it)->muonTrack(), (*it)->trackerTrack(), 
 					tkTrajectory? new Trajectory(*tkTrajectory) : 0);
 
     if ( finalTrajectory ) 
