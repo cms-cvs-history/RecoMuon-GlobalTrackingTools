@@ -12,10 +12,10 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2009/07/24 19:44:30 $
- *  $Revision: 1.34.2.3 $
- *  $Date: 2009/07/24 19:44:30 $
- *  $Revision: 1.34.2.3 $
+ *  $Date: 2009/08/27 17:15:56 $
+ *  $Revision: 1.38 $
+ *  $Date: 2009/08/27 17:15:56 $
+ *  $Revision: 1.38 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -246,7 +246,7 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
 
     if ( finalTrajectory ) 
       refittedResult.push_back(finalTrajectory);
-      
+    if(tkTrajectory) delete tkTrajectory;  
   }
 
   // choose the best global fit for this Standalone Muon based on the track probability
@@ -271,6 +271,7 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
     if ( (*it)->trackerTrajectory() ) delete (*it)->trackerTrajectory();
     if ( *it ) delete (*it);
   }
+
   refittedResult.clear();
 
   return selectedResult;
