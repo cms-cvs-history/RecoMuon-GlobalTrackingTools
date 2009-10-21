@@ -5,7 +5,7 @@
 //
 //
 // Original Author:  Adam Everett
-// $Id: GlobalTrackQualityProducer.cc,v 1.1 2009/09/11 19:55:23 aeverett Exp $
+// $Id: GlobalTrackQualityProducer.cc,v 1.3 2009/10/20 19:36:35 slava77 Exp $
 //
 //
 
@@ -88,11 +88,12 @@ GlobalTrackQualityProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
     }
     LogDebug(theCategory)<<"Kink " << thisKink.first << " " << thisKink.second;
     LogDebug(theCategory)<<"Rel Chi2 " << relative_tracker_chi2 << " " << relative_muon_chi2;
+    float maxFloat01 = std::numeric_limits<float>::max()*0.1; // a better solution would be to use float above .. m/be not
     reco::MuonQuality muQual;
-    muQual.trkKink    = thisKink.first;
-    muQual.glbKink    = thisKink.second;
-    muQual.trkRelChi2 = relative_tracker_chi2;
-    muQual.staRelChi2 = relative_muon_chi2;
+    muQual.trkKink    = thisKink.first > maxFloat01 ? maxFloat01 : thisKink.first;
+    muQual.glbKink    = thisKink.second > maxFloat01 ? maxFloat01 : thisKink.second;
+    muQual.trkRelChi2 = relative_tracker_chi2 > maxFloat01 ? maxFloat01 : relative_tracker_chi2;
+    muQual.staRelChi2 = relative_muon_chi2 > maxFloat01 ? maxFloat01 : relative_muon_chi2;
     valuesQual.push_back(muQual);
   }
 
@@ -146,7 +147,14 @@ std::pair<double,double> GlobalTrackQualityProducer::kink(Trajectory& muon) cons
     const TrajectoryStateOnSurface& tsos = (*m).predictedState();
 
 
-    if ( tsos.isValid() ) {
+    if ( tsos.isValid() && rhit->isValid() && rhit->hit()->isValid()
+	 && !std::isinf(rhit->localPositionError().xx()) //this is paranoia induced by reported case
+	 && !std::isinf(rhit->localPositionError().xy()) //it's better to track down the origin of bad numbers
+	 && !std::isinf(rhit->localPositionError().yy())
+	 && !std::isnan(rhit->localPositionError().xx()) //this is paranoia induced by reported case
+	 && !std::isnan(rhit->localPositionError().xy()) //it's better to track down the origin of bad numbers
+	 && !std::isnan(rhit->localPositionError().yy())
+	 ) {
 
       double phi1 = tsos.globalPosition().phi();
       if ( phi1 < 0 ) phi1 = 2*M_PI + phi1;
