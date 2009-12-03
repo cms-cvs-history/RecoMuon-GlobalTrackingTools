@@ -12,10 +12,10 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2009/09/11 06:51:54 $
- *  $Revision: 1.41 $
- *  $Date: 2009/09/11 06:51:54 $
- *  $Revision: 1.41 $
+ *  $Date: 2009/12/03 11:00:48 $
+ *  $Revision: 1.41.2.1 $
+ *  $Date: 2009/12/03 11:00:48 $
+ *  $Revision: 1.41.2.1 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -541,7 +541,7 @@ GlobalTrajectoryBuilderBase::getTransientRecHits(const reco::Track& track) const
 	LogTrace(theCategory)<<"predtsos "<<predTsos.isValid();
 	if (!predTsos.isValid() ){
 	  edm::LogError("MissingTransientHit")
-	    <<"could not get a tsos on the hit surface. We will miss a tracking hit, and probably more.";
+	    <<"Could not get a tsos on the hit surface. We will miss a tracking hit.";
 	  continue; 
 	}
 	currTsos = predTsos;
