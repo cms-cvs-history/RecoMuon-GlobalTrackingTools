@@ -12,10 +12,10 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2009/09/04 19:47:20 $
- *  $Revision: 1.39 $
- *  $Date: 2009/09/04 19:47:20 $
- *  $Revision: 1.39 $
+ *  $Date: 2009/09/11 06:51:54 $
+ *  $Revision: 1.41 $
+ *  $Date: 2009/09/11 06:51:54 $
+ *  $Revision: 1.41 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -539,7 +539,12 @@ GlobalTrajectoryBuilderBase::getTransientRecHits(const reco::Track& track) const
 	TransientTrackingRecHit::RecHitPointer ttrhit = theTrackerRecHitBuilder->build(&**hit);
 	TrajectoryStateOnSurface predTsos =  theService->propagator(theTrackerPropagatorName)->propagate(currTsos, theService->trackingGeometry()->idToDet(recoid)->surface());
 	LogTrace(theCategory)<<"predtsos "<<predTsos.isValid();
-	if ( predTsos.isValid() ) currTsos = predTsos;
+	if (!predTsos.isValid() ){
+	  edm::LogError("MissingTransientHit")
+	    <<"could not get a tsos on the hit surface. We will miss a tracking hit, and probably more.";
+	  continue; 
+	}
+	currTsos = predTsos;
 	TransientTrackingRecHit::RecHitPointer preciseHit = ttrhit->clone(predTsos);
 	result.push_back(preciseHit);
       } else if ( recoid.det() == DetId::Muon ) {
