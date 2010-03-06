@@ -12,10 +12,10 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2009/09/16 13:07:46 $
- *  $Revision: 1.42 $
- *  $Date: 2009/09/16 13:07:46 $
- *  $Revision: 1.42 $
+ *  $Date: 2009/12/03 11:32:07 $
+ *  $Revision: 1.43 $
+ *  $Date: 2009/12/03 11:32:07 $
+ *  $Revision: 1.43 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -233,7 +233,10 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
     if ( ! ((*it)->trackerTrajectory() && (*it)->trackerTrajectory()->isValid()) ) { 
       refitted0 = theTrackTransformer->transform((*it)->trackerTrack()) ;
       if (!refitted0.empty()) tkTrajectory = new Trajectory(*(refitted0.begin())); 
-      else LogWarning(theCategory)<< "Failed to load tracker track trajectory";
+      else{
+	LogTrace(theCategory)<< "Failed to load tracker track trajectory";
+	LogWarning("FailedTrajectoryLoad")<< "Failed to load tracker track trajectory";
+      }
     } else tkTrajectory = (*it)->trackerTrajectory();
     if (tkTrajectory) tkTrajectory->setSeedRef(tmpSeed);
 

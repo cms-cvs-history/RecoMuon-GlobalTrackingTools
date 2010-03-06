@@ -4,8 +4,8 @@
  *  Description:
  *
  *
- *  $Date: 2009/09/12 20:33:33 $
- *  $Revision: 1.11 $
+ *  $Date: 2009/10/20 14:23:50 $
+ *  $Revision: 1.12 $
  *
  *  Authors :
  *  P. Traczyk, SINS Warsaw
@@ -552,7 +552,8 @@ vector<Trajectory> GlobalMuonRefitter::transform(const reco::Track& newTrack,
 			<< " innerId is " << innerId;
 
   if(!firstTSOS.isValid()){
-    LogWarning(theCategory) << "Error wrong initial state!" << endl;
+    LogTrace(theCategory) << "Error wrong initial state!" << endl;
+    LogWarning("InvalidFirstTSOS") << "Error wrong initial state!" << endl;
     return vector<Trajectory>();
   }
 
