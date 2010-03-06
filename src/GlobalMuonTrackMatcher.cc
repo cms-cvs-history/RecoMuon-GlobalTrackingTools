@@ -2,8 +2,8 @@
  *  Class: GlobalMuonTrackMatcher
  *
  * 
- *  $Date: 2009/09/16 16:43:35 $
- *  $Revision: 1.19 $
+ *  $Date: 2009/10/31 01:37:41 $
+ *  $Revision: 1.20 $
  *  
  *  \author Chang Liu - Purdue University
  *  \author Norbert Neumeister - Purdue University
@@ -201,7 +201,7 @@ GlobalMuonTrackMatcher::match(const TrackCand& sta,
   double min_d = 999999;
   double min_de= 999999;
   double min_r_pos = 999999;
-  bool passes[1000] = {false};
+  std::vector<bool> passes(cands.size(),false);
   int jj=0;
   
   
@@ -218,7 +218,7 @@ GlobalMuonTrackMatcher::match(const TrackCand& sta,
     
     
     if( (*ii).second.globalMomentum().perp()<thePt_threshold1){
-      if( ( chi2>0 && abs((*ii).second.globalMomentum().eta())<1.2 && chi2<theChi2_1 ) || (distance>0 && distance<theDeltaD_1 && loc_chi2>0 && loc_chi2<theLocChi2) ){
+      if( ( chi2>0 && fabs((*ii).second.globalMomentum().eta())<1.2 && chi2<theChi2_1 ) || (distance>0 && distance<theDeltaD_1 && loc_chi2>0 && loc_chi2<theLocChi2) ){
         result.push_back((*ii).first);
         passes[jj]=true;
       }
@@ -254,7 +254,7 @@ GlobalMuonTrackMatcher::match(const TrackCand& sta,
       
       if (muonTSOS.isValid() && (*is).second.isValid()) 
 	// check matching between tracker and muon tracks using dEta cut looser then dPhi cut 
-        if(fabs((*is).second.globalPosition().eta()-muonTSOS.globalPosition().eta()<1.5*theDeltaR_2)
+        if(fabs((*is).second.globalPosition().eta()-muonTSOS.globalPosition().eta())<1.5*theDeltaR_2
         &&fabs(deltaPhi((*is).second.globalPosition().phi(),muonTSOS.globalPosition().phi()))<theDeltaR_2){
 	  result.push_back((*is).first);
 	  passes[jj]=true;
@@ -480,7 +480,7 @@ GlobalMuonTrackMatcher::samePlane(const TrajectoryStateOnSurface& tsos1,
 
   if ( !tsos1.isValid() || !tsos2.isValid() ) return false;
 
-  if ( abs(match_D(tsos1,tsos2) - match_d(tsos1,tsos2)) > 0.1 ) return false;
+  if ( fabs(match_D(tsos1,tsos2) - match_d(tsos1,tsos2)) > 0.1 ) return false;
 
   const float maxtilt = 0.999;
   const float maxdist = 0.01; // in cm
