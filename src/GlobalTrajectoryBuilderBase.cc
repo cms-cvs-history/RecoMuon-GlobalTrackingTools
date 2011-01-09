@@ -12,10 +12,10 @@
  *   in the muon system and the tracker.
  *
  *
- *  $Date: 2010/06/08 19:22:42 $
- *  $Revision: 1.47 $
- *  $Date: 2010/06/08 19:22:42 $
- *  $Revision: 1.47 $
+ *  $Date: 2010/09/27 13:39:24 $
+ *  $Revision: 1.49 $
+ *  $Date: 2010/09/27 13:39:24 $
+ *  $Revision: 1.49 $
  *
  *  \author N. Neumeister        Purdue University
  *  \author C. Liu               Purdue University
@@ -70,7 +70,7 @@
 #include "RecoMuon/GlobalTrackingTools/interface/MuonTrackingRegionBuilder.h"
 #include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
-#include "TrackingTools/PatternTools/interface/TrajectoryFitter.h"
+#include "TrackingTools/TrackFitters/interface/TrajectoryFitter.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 
@@ -264,18 +264,21 @@ GlobalTrajectoryBuilderBase::build(const TrackCand& staCand,
   CandidateContainer selectedResult;
   MuonCandidate* tmpCand = 0;
   if ( refittedResult.size() > 0 ) tmpCand = *(refittedResult.begin());
-  
+  double minProb = 9999;
+
   for (CandidateContainer::const_iterator iter=refittedResult.begin(); iter != refittedResult.end(); iter++) {
     double prob = trackProbability(*(*iter)->trajectory());
     LogTrace(theCategory)<<"   refitted-track-sta with pT " << (*iter)->trackerTrack()->pt() << " has probability " << prob;
-    
-    tmpCand = (*iter);
-    
-    if ( tmpCand ) selectedResult.push_back(new MuonCandidate(new Trajectory(*(tmpCand->trajectory())), tmpCand->muonTrack(), tmpCand->trackerTrack(), 
-							      (tmpCand->trackerTrajectory())? new Trajectory( *(tmpCand->trackerTrajectory()) ):0 ) );
-    
+
+    if (prob < minProb) {
+      minProb = prob;
+      tmpCand = (*iter);
+    }
   }
-  
+
+  if ( tmpCand )  selectedResult.push_back(new MuonCandidate(new Trajectory(*(tmpCand->trajectory())), tmpCand->muonTrack(), tmpCand->trackerTrack(), 
+							     (tmpCand->trackerTrajectory())? new Trajectory( *(tmpCand->trackerTrajectory()) ):0 ) );
+
   for (CandidateContainer::const_iterator it = refittedResult.begin(); it != refittedResult.end(); ++it) {
     if ( (*it)->trajectory() ) delete (*it)->trajectory();
     if ( (*it)->trackerTrajectory() ) delete (*it)->trackerTrajectory();
@@ -531,8 +534,8 @@ GlobalTrajectoryBuilderBase::getTransientRecHits(const reco::Track& track) const
   TrajectoryStateOnSurface currTsos = tsTrans.innerStateOnSurface(track, *theService->trackingGeometry(), &*theService->magneticField());
 
   for (trackingRecHit_iterator hit = track.recHitsBegin(); hit != track.recHitsEnd(); ++hit) {
-    DetId recoid = (*hit)->geographicalId();
-    if((*hit)->isValid()) {      
+    if((*hit)->isValid()) {
+      DetId recoid = (*hit)->geographicalId();
       if ( recoid.det() == DetId::Tracker ) {
 	TransientTrackingRecHit::RecHitPointer ttrhit = theTrackerRecHitBuilder->build(&**hit);
 	TrajectoryStateOnSurface predTsos =  theService->propagator(theTrackerPropagatorName)->propagate(currTsos, theService->trackingGeometry()->idToDet(recoid)->surface());
@@ -552,8 +555,6 @@ GlobalTrajectoryBuilderBase::getTransientRecHits(const reco::Track& track) const
 	}
 	result.push_back(theMuonRecHitBuilder->build(&**hit));
       }
-    } else if ( recoid.det() == DetId::Muon ) {
-      result.push_back(theMuonRecHitBuilder->build(&**hit));
     }
   }
   
