@@ -4,8 +4,8 @@
  *  Description:
  *
  *
- *  $Date: 2009/10/20 14:23:50 $
- *  $Revision: 1.12 $
+ *  $Date: 2010/06/18 07:40:09 $
+ *  $Revision: 1.13 $
  *
  *  Authors :
  *  P. Traczyk, SINS Warsaw
@@ -35,7 +35,7 @@
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
-#include "TrackingTools/PatternTools/interface/TrajectoryFitter.h"
+#include "TrackingTools/TrackFitters/interface/TrajectoryFitter.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 
 
