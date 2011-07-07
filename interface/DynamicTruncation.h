@@ -9,8 +9,8 @@
  *  compatibility degree between the extrapolated track
  *  state and the reconstructed segment in the muon chambers
  *
- *  $Date: 2011/04/21 01:45:08 $
- *  $Revision: 1.4 $
+ *  $Date: 2010/06/14 11:01:30 $
+ *  $Revision: 1.1 $
  *
  *  Authors :
  *  D. Pagano & G. Bruno - UCL Louvain
@@ -59,9 +59,6 @@ class DynamicTruncation {
   
   // Return the vector with the tracker plus the selected muon hits
   TransientTrackingRecHit::ConstRecHitContainer filter(const Trajectory&);
-
-  // Return the vector with the estimator values 
-  std::vector<double> getEstimators() {return estimators;};
  
  private:
 
@@ -90,7 +87,7 @@ class DynamicTruncation {
   edm::ESHandle<MagneticField> magfield;
   const edm::Event* theEvent;
   const edm::EventSetup* theSetup;
-  std::vector<double> estimators;
+
   TrajectoryStateOnSurface currentState;
 };
 
