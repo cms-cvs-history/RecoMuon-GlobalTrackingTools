@@ -6,8 +6,8 @@
  *  compatibility degree between the extrapolated track
  *  state and the reconstructed segment in the muon chambers
  *
- *  $Date: 2011/04/21 01:45:09 $
- *  $Revision: 1.6 $
+ *  $Date: 2010/06/17 11:01:56 $
+ *  $Revision: 1.2 $
  *
  *  Authors :
  *  D. Pagano & G. Bruno - UCL Louvain
@@ -145,6 +145,7 @@ void DynamicTruncation::compatibleDets(TrajectoryStateOnSurface& tsos, map<int, 
   MeasurementEstimator *theEstimator = new Chi2MeasurementEstimator(100, 3);
   std::vector<const DetLayer *> navLayers;
   navLayers = navigation->compatibleLayers(*(currentState.freeState()), alongMomentum);
+  unsigned int nlayer = 0;
   for ( unsigned int ilayer=0; ilayer<navLayers.size(); ilayer++ ) {
     // Skip RPC layers
     if (navLayers[ilayer]->subDetector() == GeomDetEnumerators::RPCEndcap 
@@ -152,12 +153,10 @@ void DynamicTruncation::compatibleDets(TrajectoryStateOnSurface& tsos, map<int, 
     std::vector<DetLayer::DetWithState> comps = navLayers[ilayer]->compatibleDets(currentState, 
 										  *propagatorCompatibleDet, *theEstimator);
     //    cout << comps.size() << " compatible Dets with " << navLayers[ilayer]->subDetector() << " Layer " << ilayer << " "
-    //     << dumper.dumpLayer(navLayers[ilayer]) << " " << endl;
+    //    	 << dumper.dumpLayer(navLayers[ilayer]) << " " << endl;
     if (comps.size() > 0) {
-      for ( unsigned int icomp=0; icomp<comps.size(); icomp++ ) {
-	DetId id(comps[icomp].first->geographicalId().rawId());
-	detMap[ilayer].push_back(id);
-      }
+      DetId id(comps.front().first->geographicalId().rawId());
+      detMap[nlayer].push_back(id);
     }
   }
   if (theEstimator) delete theEstimator;
@@ -169,21 +168,20 @@ void DynamicTruncation::filteringAlgo(map<int, std::vector<DetId> >& detMap) {
   ChamberSegmentUtility getSegs(*theEvent, *theSetup);
   for (unsigned int iDet = 0; iDet < detMap.size(); ++iDet) {
     double bestLayerValue = MAX_THR;
-    bool isDTorCSC = false;
     ConstRecHitContainer layerRH;
     std::vector<DetId> chamber = detMap[iDet];
     for (unsigned int j = 0; j < chamber.size(); ++j) {
       DetId id = chamber[j];
       
       if (id.det() == DetId::Muon && id.subdetId() == MuonSubdetId::DT) {
-        isDTorCSC = true;
-	DTChamberId DTid(id);
+        DTChamberId DTid(id);
 	
 	std::vector<DTRecSegment4D> allDTsegs;
 	std::map<int, std::vector<DTRecSegment4D> >::const_iterator dtIter = getSegs.getDTlist().find(DTid.station());
 	if (dtIter != getSegs.getDTlist().end()){
 	  allDTsegs = dtIter->second;
 	}
+	
 	std::vector<DTRecSegment4D>::size_type sz = allDTsegs.size();
 	for (unsigned int iSeg=0; iSeg<sz; ++iSeg) {
 	  
@@ -209,7 +207,6 @@ void DynamicTruncation::filteringAlgo(map<int, std::vector<DetId> >& detMap) {
 	}
       }
       if (id.det() == DetId::Muon && id.subdetId() == MuonSubdetId::CSC) {
-	isDTorCSC = true;
         CSCDetId CSCid(id);
 	
 	std::vector<CSCSegment> allCSCsegs;
@@ -236,6 +233,7 @@ void DynamicTruncation::filteringAlgo(map<int, std::vector<DetId> >& detMap) {
 	  // Check if the best estimator value is below the THR and then get the RH componing the segment
 	  if (bestChamberValue >= CSCThr || bestChamberValue > bestLayerValue) continue;
 	  layerRH.clear();
+	  
 	  std::vector<CSCRecHit2D> CSCrh = getSegs.getCSCRHmap(bestCSCSeg);
 	  for (std::vector<CSCRecHit2D>::iterator it = CSCrh.begin(); it != CSCrh.end(); ++it) {
 	    layerRH.push_back(theMuonRecHitBuilder->build(&*it));
@@ -243,12 +241,7 @@ void DynamicTruncation::filteringAlgo(map<int, std::vector<DetId> >& detMap) {
 	}
       }
     }
-
-    if (isDTorCSC) {
-      if (bestLayerValue < MAX_THR) estimators.push_back(bestLayerValue);
-      else estimators.push_back(-1);
-    }
-
+    
     if (layerRH.size() > 0) {                                                                                                                                          
       for (ConstRecHitContainer::iterator it = layerRH.begin(); it != layerRH.end(); ++it) {                                                                         
 	result.push_back((*it));                                                                                                                                         
