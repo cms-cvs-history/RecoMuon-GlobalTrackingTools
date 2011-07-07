@@ -4,8 +4,8 @@
 /** \class GlobalMuonRefitter
  *  class to build muon trajectory
  *
- *  $Date: 2011/06/07 15:34:27 $
- *  $Revision: 1.12 $
+ *  $Date: 2010/02/20 21:01:05 $
+ *  $Revision: 1.8 $
  *
  *  \author N. Neumeister 	 Purdue University
  *  \author C. Liu 		 Purdue University
@@ -93,7 +93,7 @@ class GlobalMuonRefitter {
     
     /// check muon RecHits, calculate chamber occupancy and select hits to be used in the final fit
     void checkMuonHits(const reco::Track&, ConstRecHitContainer&, 
-                       std::map<DetId, int> &) const;
+                       std::vector<int>&) const;
 
     /// get the RecHits in the tracker and the first muon chamber with hits 
     void getFirstHits(const reco::Track&, ConstRecHitContainer&, 
@@ -101,7 +101,7 @@ class GlobalMuonRefitter {
  
     /// select muon hits compatible with trajectory; check hits in chambers with showers
     ConstRecHitContainer selectMuonHits(const Trajectory&, 
-                                        const std::map<DetId, int> &) const;
+                                        const std::vector<int>&) const;
  
     /// print all RecHits of a trajectory
     void printHits(const ConstRecHitContainer&) const;
@@ -141,8 +141,6 @@ class GlobalMuonRefitter {
     bool theRPCInTheFit;
 
     RefitDirection theRefitDirection;
-
-    std::vector<int> theDYTthrs;
 
     std::string theFitterName;
     edm::ESHandle<TrajectoryFitter> theFitter;
